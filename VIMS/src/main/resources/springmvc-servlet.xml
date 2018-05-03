@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans.xsd
+    http://www.springframework.org/schema/context
+    http://www.springframework.org/schema/context/spring-context.xsd
+    http://www.springframework.org/schema/mvc 
+    http://www.springframework.org/schema/mvc/spring-mvc.xsd
+    http://www.springframework.org/schema/aop
+    http://www.springframework.org/schema/aop/spring-aop-3.2.xsd
+    http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+    <!-- 启用CGliB -->
+    <aop:aspectj-autoproxy proxy-target-class="true"/>
+
+    <dubbo:annotation package="com.vms.controller"/>
+    <dubbo:annotation package="com.vms.service"/>
+
+	
+    <context:component-scan base-package="com.vms.*.controller"/>
+    <context:component-scan base-package="com.vms.commons.context"/>
+    
+    <!-- 配置结果页面 前缀和后缀 -->
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="order" value="10"></property>
+        <property name="prefix" value="/WEB-INF/views/"></property>
+        <property name="suffix" value=".jsp"></property>
+    </bean>
+
+    <!-- 配置哪些是静态资源，缺省Servlet 直接返回 -->
+    <mvc:resources mapping="/static/**" location="/static/" cache-period="31556926"/>
+    <mvc:resources mapping="/resources/**" location="/WEB-INF/resources/" cache-period="31556926"/>
+    <mvc:resources mapping="/css/**" location="/css/" cache-period="31556926"/>
+    <mvc:resources mapping="/js/**" location="/js/" cache-period="31556926"/>
+    <mvc:resources mapping="/images/**" location="/images/" cache-period="31556926"/>
+    <mvc:resources mapping="/img/**" location="/img/" cache-period="31556926"/>
+    <mvc:resources mapping="/editor-app/**" location="/editor-app/" cache-period="31556926"/>
+    <mvc:resources mapping="/diagram-viewer/**" location="/diagram-viewer/" cache-period="31556926"/>
+    <mvc:resources mapping="/modeler.html" location="/modeler.html" cache-period="31556926"/>
+
+    <mvc:annotation-driven>
+        <mvc:message-converters register-defaults="false">
+            <!-- 将StringHttpMessageConverter的默认编码设为UTF-8 -->
+            <bean class="org.springframework.http.converter.StringHttpMessageConverter">
+                <constructor-arg value="UTF-8"/>
+            </bean>
+            <ref bean="jacksonMessageConverter" />
+        </mvc:message-converters>
+    </mvc:annotation-driven>
+
+    <bean id="jacksonMessageConverter" class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+        <property name="supportedMediaTypes">
+            <list>
+                <value>text/html;charset=UTF-8</value>
+                <value>application/json;charset=UTF-8</value>
+            </list>
+        </property>
+        <property name="objectMapper" ref="objectMapper" />
+    </bean>
+
+    <bean id="objectMapper" class="com.fasterxml.jackson.databind.ObjectMapper">
+        <property name="timeZone">
+            <bean class="java.util.TimeZone" factory-method="getTimeZone" >
+                <constructor-arg value="GMT+08"/>
+            </bean>
+        </property>
+        <property name="dateFormat">
+            <bean class="java.text.SimpleDateFormat">
+                <constructor-arg type="java.lang.String" value="yyyy-MM-dd HH:mm:ss"/>
+            </bean>
+        </property>
+    </bean>
+
+    <!-- 文件上传 -->
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <!-- 设置上传文件总大小限制 -->
+        <property name="maxUploadSize" value="10000000"></property>
+    </bean>
+
+    <!-- 配置国际化文件 -->
+    <bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+        <property name="defaultEncoding" value="UTF-8"></property>
+        <property name="useCodeAsDefaultMessage" value="true"></property>
+        <property name="basenames">
+            <list>
+                <!-- 
+                <value>classpath:i18n/system/system</value>
+                 -->
+            </list>
+        </property>
+    </bean>
+
+    <!-- 配置基于Cookie的处理,将提交上来的locale参数进行处理 -->
+    <bean id="localeResolver" class="org.springframework.web.servlet.i18n.CookieLocaleResolver">
+        <!-- 默认语言。修改后，需要删除客户端的cookie，默认语言才会生效-->
+        <property name="defaultLocale" value="en_US"/>
+        <property name="cookieName" value="client_language"/>
+
+        <!-- in seconds. If set to -1, the cookie is not persisted (deleted when browser shuts down) -->
+        <!--cookie超时时间，默认30天-->
+        <property name="cookieMaxAge" value="2592000" />
+    </bean>
+
+    <!-- 使用拦截器处理国际化请求 -->
+    <mvc:interceptors>
+        <bean class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor" />
+    </mvc:interceptors>
+</beans>
