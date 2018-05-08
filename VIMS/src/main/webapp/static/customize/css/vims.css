@@ -2,6 +2,8 @@ html,body{overflow: hidden;font-family: "微软雅黑";font-size: 12px;}
 input:-webkit-autofill {-webkit-box-shadow: 0 0 0px 1000px white inset !important;}
 .fl{float: left;}
 .fr{float: right;}
+.m0{margin: 0;}
+.p0{padding: 0;}
 .full-width{width: 100%;}
 .full-height{height: 100%;}
 .body-header{position: absolute;top:0;right:0;left:0;height:60px;
@@ -78,3 +80,23 @@ body, h1, h2, h3, h4, h5, h6, p, ul, ol, form{margin: 0;}
      100% { background-position: -100% 0;}
 }
 .position-relative-center-h1{position: relative;top:50%;margin-top: -20px;}
+.vims-body{padding:0 20px;}
+
+/** modal对话框页面居中显示 **/
+.modal-dialog{position: absolute;top: 0;bottom: 0;left: 0;right:0;margin: auto;}
+.modal-dialog:before {content: '';display: inline-block;height: 100%;vertical-align: middle;} 
+.modal-content {display: inline-block;vertical-align: middle;width: 100%;}
+
+.modal-defalut{width: 680px;}
+.modal-header .modal-title{font-size: 14px; font-weight: bolder;}
+button,a{outline: none !important;}
+textarea{resize:none;}
+.form-title{padding: 6px 12px; font-size: 14px; font-weight: 400; color: #555; text-align: center; background-color: #eee; border: 1px solid #ccc; border-radius: 4px;display: table-cell;}
+.form-title:first-child{border-right: 0;border-top-right-radius: 0;border-bottom-right-radius: 0;}
+.form-title + div .form-control{border-top-left-radius: 0;border-bottom-left-radius: 0;}
+
+/** Bootstrap-table 样式定制 **/
+.fixed-table-container thead th:first-child:not([data-not-first-th]){border-top-left-radius:0;-webkit-border-top-left-radius:0;}
+.fixed-table-container{border-radius: 0;-webkit-border-radius: 0;}
+.bootstrap-table .table{border-bottom: none;}
+.bootstrap-table .btn{padding:3px 12px;}

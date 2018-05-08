@@ -1,0 +1,9 @@
+{
+	"total":200,
+    "rows": [
+			{"ID":"10000","deptName":"资源管理部1","superDeptName":"行政部","telephone":"123000234551","deptEmail":"648464035@qq.com","deptFax":"025-52222225","createTime":"2018-08-05","mark":"开通"},
+			{"ID":"10001","deptName":"资源管理部2","superDeptName":"行政部","telephone":"123000234551","deptEmail":"648464035@qq.com","deptFax":"025-52222225","createTime":"2018-08-04","mark":"开通"},
+			{"ID":"10002","deptName":"资源管理部3","superDeptName":"行政部","telephone":"123000234551","deptEmail":"648464035@qq.com","deptFax":"025-52222225","createTime":"2018-08-03","mark":"开通"},
+			{"ID":"10003","deptName":"资源管理部4","superDeptName":"行政部","telephone":"123000234551","deptEmail":"648464035@qq.com","deptFax":"025-52222225","createTime":"2018-08-02","mark":"开通"}
+        ]    
+}
