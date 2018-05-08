@@ -1,0 +1,101 @@
+a{text-decoration:none;}
+.clear{clear:both;}/* clear float */
+.pos-relative{position:relative;}/* Position Relative */
+.pos-absolute{position:absolute;}/* Position Absolute */
+.vertical-base{	vertical-align:baseline;}/* vertical align baseline */
+.vertical-top{	vertical-align:top;}/* vertical align top */
+.underline{padding-bottom:5px;	border-bottom: 1px solid #eee; margin:0 0 20px 0;}/* Add 5px bottom padding and a underline */
+nav.vertical ul li{	display:block;}/* vertical menu */
+nav.horizontal ul li{	display: inline-block;}/* horizontal menu */
+img{max-width:100%;}
+body {
+	background: url("../images/bg.jpg") no-repeat;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center;
+    background-size: cover;
+}
+
+h1 {
+    text-align: center;
+    font-size: 40px;
+    color: #105986;
+}
+
+.signin {
+    width: 40%;
+    margin: 50px auto 0;
+    background-color: rgba(56, 49, 49, 0.13);
+    padding: 40px;
+    border: 2px ridge rgba(238, 238, 238, 0.13);
+    border-radius: 5px;
+    -moz-box-shadow: 0 -5px 10px 1px rgba(16, 16, 16, 0.57);
+	-webkit-box-shadow: 0 -5px 10px 1px rgba(16, 16, 16, 0.57);
+	box-shadow: 0 -5px 10px 1px rgba(16, 16, 16, 0.57);
+	border-bottom: none;
+}
+
+input.user {
+    width: 100%;
+    padding: 10px 10px 10px 45px;
+    background: rgba(23, 24, 25, 0.29) url("../images/user.png") no-repeat 10px 10px;
+    border: 1px solid #7B7474;
+    border-radius: 5px;
+    font-size: 18px;
+    color: #FFF;
+    outline: none;
+    margin-bottom: 20px;
+    letter-spacing: 2px;
+}
+input.pass {
+    width: 100%;
+    padding: 10px 10px 10px 45px;
+    background: rgba(23, 24, 25, 0.29) url("../images/pass.png") no-repeat 11px 10px;
+    border: 1px solid #7B7474;
+    border-radius: 5px;
+    font-size: 18px;
+    color: #FFF;
+    outline: none;
+    margin-bottom: 20px;
+    letter-spacing: 2px;
+}
+
+label {
+    color: #FFF;
+}
+
+input.loginBtn{
+    width: 100%;
+    padding: 10px 0;
+    margin-top: 20px;
+    outline: none;
+    border: 1px solid #7B7474;
+    font-size: 17px;
+    color: #FFFFFF;
+    background-color: rgba(23, 24, 25, 0.24);
+    border-radius: 5px;
+    cursor: pointer;
+}
+input.loginBtn:hover {
+	background-color: rgba(16, 89, 134, 0.52);
+	-webkit-transition: all 0.2s ease-in-out;
+    -moz-transition: all 0.2s ease-in-out;
+    -o-transition: all 0.2s ease-in-out;
+    transition: all 0.2s ease-in-out;
+}
+
+.footer {
+    text-align: center;
+    margin-top: 100px;
+}
+.footer p {
+    color: #FFF;
+}
+.footer a {
+    color: #FFF;
+    text-decoration: none;
+}
+.footer a:hover {
+    text-decoration: underline;
+	color: #190909;
+}
