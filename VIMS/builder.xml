@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+<project name="VIMS" default="cancat">
+    <description>合并js文件</description>
+	<property name="vimsFileDir" value="${basedir}/src/main/webapp/static/customize/vims"/>
+	<property name="sourceFileDir" value="${vimsFileDir}/service"/>
+	<property name="build.file" value="${vimsFileDir}/vims-all.js" />
+    <target name="clean" >
+        <delete file="${build.file}"/>  
+    </target>
+	<target name="cancat" depends="clean">
+		<concat destfile="${build.file}"> 
+			<fileset dir="${sourceFileDir}" includes="**/*.js"/>
+		</concat> 
+	</target>
+</project>
