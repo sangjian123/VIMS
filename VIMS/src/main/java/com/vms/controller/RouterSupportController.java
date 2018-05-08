@@ -26,4 +26,9 @@ public class RouterSupportController
         return "support/deptManager";
     }
     
+    @RequestMapping (value = "deptInfo")
+    public String deptInfo()
+    {
+        return "support/deptInfo";
+    }
 }
