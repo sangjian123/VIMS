@@ -1,0 +1,10 @@
+{
+	"total":200,
+    "rows": [
+			{"ID":"10001","operUserName":"zs1","userName":"张三1","department":"资源部","sex":"男","roleName":"管理员","phone":"13801594564","status":"在线","createTime":"2018-08-05"},
+			{"ID":"10002","operUserName":"zs2","userName":"张三2","department":"资源部","sex":"男","roleName":"管理员","phone":"13801594564","status":"在线","createTime":"2018-08-05"},
+			{"ID":"10003","operUserName":"zs3","userName":"张三3","department":"资源部","sex":"女","roleName":"管理员","phone":"13801594564","status":"在线","createTime":"2018-08-05"},
+			{"ID":"10004","operUserName":"zs4","userName":"张三4","department":"资源部","sex":"女","roleName":"管理员","phone":"13801594564","status":"在线","createTime":"2018-08-05"},
+			{"ID":"10005","operUserName":"zs5","userName":"张三5","department":"资源部","sex":"女","roleName":"管理员","phone":"13801594564","status":"在线","createTime":"2018-08-05"}
+        ]    
+}

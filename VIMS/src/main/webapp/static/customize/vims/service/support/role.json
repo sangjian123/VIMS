@@ -1,0 +1,9 @@
+{
+	"total":200,
+    "rows": [
+			{"ID":"10000","roleName":"张三","roleDescription":"资源部","department":"资源部","roleType":"管理员","createTime":"2018-08-05"},
+			{"ID":"10001","roleName":"李四","roleDescription":"行政部","department":"行政部","roleType":"超级管理员","createTime":"2018-08-04"},
+			{"ID":"10002","roleName":"王二","roleDescription":"招聘部","department":"招聘部","roleType":"操作员","createTime":"2018-08-03"},
+			{"ID":"10003","roleName":"麻子","roleDescription":"保安部","department":"保安部","roleType":"用户","createTime":"2018-08-02"}
+        ]    
+}

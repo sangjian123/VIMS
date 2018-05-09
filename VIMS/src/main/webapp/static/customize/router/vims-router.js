@@ -125,6 +125,20 @@ var app = angular.module("vims.webapp", ["ui.bootstrap","ui.router"]);
 			            }
 			     }
 		  });
+		  // 操作员管理
+		  configs.push({
+			  stateName:"vimssupport.operManager",
+			  stateConfig:{
+				     url: '/3',
+				     params:{isRouter:null},
+			    	 views: {
+			    		  "content@":{
+			    			  templateUrl: basePath + "/operManager",
+			    			  controller:"OperatorManagerCtrl"
+			    		 	}
+			            }
+			     }
+		  });
 		  
 	  angular.forEach(configs,function(v,i){
 		  $stateProvider.state(v.stateName,v.stateConfig);
