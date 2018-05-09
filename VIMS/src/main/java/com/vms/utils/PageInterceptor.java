@@ -22,6 +22,7 @@ import org.apache.ibatis.scripting.defaults.DefaultParameterHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.vms.model.Page;
 
 /**
  * 分页拦截器，用于拦截需要进行分页查询的操作，然后对其进行分页处理。
@@ -41,7 +42,6 @@ public class PageInterceptor implements Interceptor
     
     //数据库类型，不同的数据库有不同的分页方法
     private String databaseType;
-    
     
     /**
      * 拦截后要执行的方法
@@ -213,8 +213,8 @@ public class PageInterceptor implements Interceptor
             {
                 sb.append("_").append(param.hashCode());
             }
-                page.setTotalRecord(totalRecord);
-                return;
+            page.setTotalRecord(totalRecord);
+            return;
         }
         
         //通过查询Sql语句获取到对应的计算总记录数的sql语句
