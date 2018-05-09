@@ -8,17 +8,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class RouterController
 {
     
-    @RequestMapping (value = "/login")
-    public String login()
-    {
-        return "login/login";
-    }
-    
-    @RequestMapping (value = "/home")
-    public String home()
-    {
-        return "home/home";
-    }
+    /* @RequestMapping (value = "/login")
+     public String login()
+     {
+         return "login/login";
+     }
+     
+     @RequestMapping (value = "/home")
+     public String home()
+     {
+         return "home/home";
+     }*/
     
     @RequestMapping (value = "/basicInfo")
     public String basicInfo()

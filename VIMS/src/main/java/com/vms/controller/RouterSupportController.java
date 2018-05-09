@@ -26,27 +26,4 @@ public class RouterSupportController
         return "support/deptManager";
     }
     
-    @RequestMapping (value = "operManager")
-    public String operManager()
-    {
-        return "support/operManager";
-    }
-    
-    @RequestMapping (value = "deptInfo")
-    public String deptInfo()
-    {
-        return "support/deptInfo";
-    }
-    
-    @RequestMapping (value = "roleInfo")
-    public String roleInfo()
-    {
-        return "support/roleInfo";
-    }
-    
-    @RequestMapping (value = "operatorInfo")
-    public String operatorInfo()
-    {
-        return "support/operatorInfo";
-    }
 }
