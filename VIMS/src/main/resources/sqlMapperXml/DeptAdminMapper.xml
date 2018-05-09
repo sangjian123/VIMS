@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vms.mapper.DeptAdminMapper">
+    <resultMap id="ResultMap" type="com.vms.model.DeptAdmin">
+        <id column="ID" property="id" jdbcType="VARCHAR"/>
+        <result column="DEPT_NO" property="deptNo" jdbcType="VARCHAR"/>
+        <result column="USER_ID" property="userId" jdbcType="VARCHAR"/>
+    </resultMap>
+
+	<select id="queryDeptAdmin"  resultMap="ResultMap" parameterType="com.vms.model.DeptAdmin">
+		SELECT * FROM T_SYS_DEPT_ADMIN WHERE 1=1 
+		<if test=" deptNo !=null  and ''!=deptNo ">
+            AND  DEPT_NO = #{deptNo}
+        </if>
+		<if test=" userId !=null  and ''!=userId ">
+            AND  USER_ID = #{userId}
+        </if>
+    </select>
+    
+
+	<select id="countDeptAdmin"  resultType="java.lang.Integer" parameterType="com.vms.model.DeptAdmin">
+		SELECT COUNT(1) FROM T_SYS_DEPT_ADMIN WHERE DEPT_NO = #{deptNo}
+    </select>
+</mapper>

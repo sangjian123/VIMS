@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vms.mapper.RoleResourceMapper">
+    <resultMap id="BaseResultMap" type="com.vms.model.RoleResource">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="role_id" property="roleId" jdbcType="BIGINT"/>
+        <result column="resource_id" property="resourceId" jdbcType="BIGINT"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    id, role_id, resource_id
+  </sql>
+
+    <select id="findRoleResourceIdListByRoleId" resultType="java.lang.Long" parameterType="java.lang.Long">
+    SELECT
+        e.id AS id
+    FROM
+        t_sys_role r
+    LEFT JOIN t_sys_role_resource e ON r.id = e.role_id
+    WHERE
+        r.id = #{id}
+  </select>
+
+    <delete id="deleteById" parameterType="java.lang.Long">
+    delete from t_sys_role_resource
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  
+  <delete id="deleteByRoleId" parameterType="java.lang.Long">
+    delete from t_sys_role_resource
+    where role_id = #{id,jdbcType=BIGINT}
+  </delete>
+
+    <insert id="insert" parameterType="com.vms.model.RoleResource">
+        insert into t_sys_role_resource (id, role_id, resource_id)
+        values (#{id,jdbcType=BIGINT}, #{roleId,jdbcType=BIGINT}, #{resourceId,jdbcType=BIGINT})
+    </insert>
+
+
+
+<select id="findRoleResourceByRoleId" parameterType="java.lang.Long" resultType="com.vms.model.Resource">
+    SELECT 
+	s.id, s.name, s.url, s.description, s.icon, s.pid, s.seq, s.status, s.resourcetype, s.createdate
+           FROM t_sys_role r, t_sys_role_resource e, t_sys_resource s
+          WHERE r.id = e.role_id
+            AND e.resource_id = s.id
+            AND r.id = #{id}
+            AND s.status = 0
+            AND s.id not in (14,141,142,143,144,11314200,15553700,15565802,11333101,15561801,12,121,122,123,124,125,13,131,132,133,134,11461002,11475704,15262601,16121500,1,11440001,16482784,15142815,15155817) 
+            ORDER BY s.pid,s.seq
+  </select>
+  
+  <select id="findRoleResourceByRoleIdAndPanel" parameterType="java.util.Map" resultType="com.vms.model.Resource">
+    SELECT distinct
+  s.id, s.name, s.url, s.description, s.icon, s.pid, s.seq, s.status, s.resourcetype, s.createdate
+           FROM t_sys_role r, t_sys_role_resource e, t_sys_resource s
+          WHERE r.id = e.role_id
+            AND e.resource_id = s.id
+            AND r.id = #{ROLEID}
+            AND s.status = 0
+            AND s.id in ${PANELIDS}  
+            ORDER BY s.pid,s.seq
+  </select>
+  
+  <select id="findRoleResourceByPanel" parameterType="java.util.Map" resultType="com.vms.model.Resource">
+    SELECT distinct
+  s.id, s.name, s.url, s.description, s.icon, s.pid, s.seq, s.status, s.resourcetype, s.createdate
+           FROM  t_sys_resource s
+          WHERE 1=1
+            AND s.id in ${PANELIDS}  
+            ORDER BY s.pid,s.seq
+  </select>
+</mapper>

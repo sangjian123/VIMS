@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vms.mapper.RoleMapper">
+    <resultMap id="BaseResultMap" type="com.vms.model.Role">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="seq" property="seq" jdbcType="TINYINT"/>
+        <result column="description" property="description" jdbcType="VARCHAR"/>
+        <result column="status" property="status" jdbcType="TINYINT"/>
+        <result column="resourceId" property="resourceId" jdbcType="VARCHAR"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    id, name, seq, description, status
+  </sql>
+
+    <select id="findRolePageCondition" resultMap="BaseResultMap" parameterType="com.vms.model.PageInfo">
+        select
+        <include refid="Base_Column_List"/>
+        from t_sys_role
+        where id != 1 and rownum BETWEEN #{from} AND #{size}
+        order by ${sort} ${order}
+    </select>
+    
+    <select id="findRoleByPage" resultMap="BaseResultMap" parameterType="com.vms.model.Page">
+       select r.id, r.name, r.seq, r.description, r.status  from t_sys_role r 
+       
+        where r.id!=1
+        <if test="params != null and params.id != null">
+           id = #{params.id}
+        </if>
+        <if test=" params.name != null and params.name != '' ">
+               and r.name LIKE concat(concat('%',#{params.name}),'%')  escape '/'
+        </if>
+        <if test=" params.status != null ">
+        	and r.status=#{params.status}
+        </if>
+		<choose>
+		    <when test="conditions == null">
+		    	ORDER BY r.id
+		    </when>
+		    <otherwise>
+		         order by  ${conditions.order}
+		    </otherwise>
+	</choose>
+    </select>
+
+    <select id="findRolePageCount" resultType="java.lang.Integer" parameterType="com.vms.model.PageInfo">
+	    select 
+	    count(*) count
+	    from t_sys_role 
+	    WHERE id != 1 
+	</select>
+
+    <select id="findRoleAll" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_sys_role 
+         WHERE id != 1 order by name
+    </select>
+
+    <select id="findRoleById" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select
+        <include refid="Base_Column_List"/>
+        from t_sys_role
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <select id="findResourceIdListByRoleId" resultType="java.lang.Long" parameterType="java.lang.Long">
+    SELECT
+        e.resource_id AS id
+    FROM
+        t_sys_role r
+    LEFT JOIN t_sys_role_RESOURCE e ON r.id = e.role_id
+    WHERE
+        r.id = #{id}
+  </select>
+
+    <select id="findResourceIdListByRoleIdAndType" resultType="com.vms.model.Resource"
+            parameterType="java.lang.Long">
+    SELECT
+        s.id AS id,
+        s. NAME AS name,
+        s.url AS url,
+        s.description AS description,
+        s.icon AS icon,
+        s.pid AS pid,
+        s.seq AS seq,
+        s. STATUS AS status,
+        s.resourcetype AS resourcetype,
+        s.createdate AS createdate
+    FROM
+        t_sys_role r
+    LEFT JOIN t_sys_role_RESOURCE e ON r.id = e.role_id
+    LEFT JOIN t_sys_resource s ON e.resource_id = s.id
+    WHERE
+        r.id = #{id}
+    AND s.resourcetype = 0
+  </select>
+
+    <select id="findRoleResourceIdListByRoleId" resultType="java.lang.Long" parameterType="java.lang.Long">
+    SELECT
+        e.id AS id
+    FROM
+        t_sys_role r
+    LEFT JOIN t_sys_role_RESOURCE e ON r.id = e.role_id
+    WHERE
+        r.id = #{id}
+  </select>
+
+    <select id="findResourcesByRoleId" resultType="java.lang.String" parameterType="java.lang.Long">
+         SELECT s.url AS url
+           FROM t_sys_role r, t_sys_role_RESOURCE e, t_sys_resource s
+          WHERE r.id = e.role_id
+          	AND s.status = 0
+            AND e.resource_id = s.id
+            AND r.id = #{id}
+            AND s.url IS NOT NULL
+    </select>
+
+  
+  <select id="findRoleByUserId" resultMap="BaseResultMap" parameterType="java.lang.String">
+      SELECT
+      	  r.*
+      FROM t_sys_role r,t_sys_user_role ur
+      WHERE r.id = ur.role_id 
+      AND ur.user_id = #{id}
+  </select>
+    <select id="queryRolesByUserId" resultType="com.vms.model.Role" parameterType="java.lang.String">
+        SELECT
+        r.id AS id,
+        r.name AS name,
+        r.status AS status
+        FROM t_sys_role r,t_sys_user_role ur
+        WHERE r.id = ur.role_id
+        AND ur.user_id = #{id}
+    </select>
+  <select id="countRole" parameterType="java.lang.Long">
+      SELECT COUNT(1) FROM t_sys_role WHERE id != 1
+  </select>
+  
+    <select id="findRoleByName" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List"/>
+        from t_sys_role
+        where name = #{roleName}
+    </select>
+    
+    <select id="getRoleIsIndexString" resultType="java.lang.String" parameterType="java.lang.String">
+        select to_char(wm_concat(r.isindex)) from t_sys_user_role a,t_sys_role r
+			where a.role_id=r.id
+ 			and a.user_id= #{userId}
+    </select>
+    
+    
+    <insert id="insert" parameterType="com.vms.model.Role">
+        insert into t_sys_role (id,name, seq, description, status)
+        values (#{id,jdbcType=BIGINT},#{name,jdbcType=VARCHAR}, #{seq,jdbcType=TINYINT}, #{description,jdbcType=VARCHAR},
+        #{status,jdbcType=TINYINT})
+    </insert>
+    
+    <update id="updateRole" parameterType="com.vms.model.Role">
+        update t_sys_role
+        <set>
+            <if test="name != null">
+                name = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="seq != null">
+                seq = #{seq,jdbcType=TINYINT},
+            </if>
+            <if test="description != null">
+                description = #{description,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=TINYINT},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+    
+    
+    <delete id="deleteRoleById" parameterType="java.lang.Long">
+    delete from t_sys_role
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+    
+</mapper>

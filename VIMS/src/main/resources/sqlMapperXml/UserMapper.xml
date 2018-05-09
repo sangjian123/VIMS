@@ -1,0 +1,342 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vms.mapper.UserMapper">
+    <resultMap id="BaseResultMap" type="com.vms.model.User">
+        <id column="id" property="id" jdbcType="VARCHAR"/>
+        <result column="loginname" property="loginname" jdbcType="VARCHAR"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="password" property="password" jdbcType="VARCHAR"/>
+        <result column="sex" property="sex" jdbcType="TINYINT"/>
+        <result column="age" property="age" jdbcType="TINYINT"/>
+        <result column="usertype" property="usertype" jdbcType="TINYINT"/>
+        <result column="status" property="status" jdbcType="TINYINT"/>
+        <result column="organization_id" property="organizationId" jdbcType="VARCHAR"/>
+        <result column="p_organization_id" property="pOrganizationId" jdbcType="VARCHAR"/>
+        <result column="createdate" property="createdate" jdbcType="TIMESTAMP"/>
+        <result column="phone" property="phone" jdbcType="VARCHAR"/>
+        <result column="pwd_first_update" property="pwdFirstUpdate" jdbcType="VARCHAR"/>
+        <result column="pwd_update_time" property="pwdUpdateTime" jdbcType="TIMESTAMP"/>
+        <result column="web_guide_first" property="webGuideFirst" jdbcType="VARCHAR"/>
+    </resultMap>
+    
+
+    <resultMap id="userVoResultMap" type="com.vms.model.UserVo">
+        <id column="id" property="id" jdbcType="VARCHAR"/>
+        <result column="loginname" property="loginname" jdbcType="VARCHAR"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="password" property="password" jdbcType="VARCHAR"/>
+        <result column="sex" property="sex" jdbcType="TINYINT"/>
+        <result column="age" property="age" jdbcType="TINYINT"/>
+        <result column="usertype" property="usertype" jdbcType="TINYINT"/>
+        <result column="status" property="status" jdbcType="TINYINT"/>
+        <result column="organization_id" property="organizationId" jdbcType="VARCHAR"/>
+        <result column="p_organization_id" property="pOrganizationId" jdbcType="VARCHAR"/>
+        <result column="createdate" property="createdate" jdbcType="TIMESTAMP"/>
+        <result column="phone" property="phone" jdbcType="VARCHAR"/>
+
+        <result column="organizationName" property="organizationName" jdbcType="VARCHAR"/>
+
+        <collection property="rolesList" ofType="com.vms.model.Role">
+            <id column="roleId" property="id"/>
+            <result column="roleName" property="name"/>
+        </collection>
+    </resultMap>
+    
+    <resultMap id="userResultMap" type="com.vms.model.UserVo">
+        <id column="id" property="id" jdbcType="VARCHAR"/>
+        <result column="loginname" property="loginname" jdbcType="VARCHAR"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="password" property="password" jdbcType="VARCHAR"/>
+        <result column="sex" property="sex" jdbcType="TINYINT"/>
+        <result column="age" property="age" jdbcType="TINYINT"/>
+        <result column="usertype" property="usertype" jdbcType="TINYINT"/>
+        <result column="status" property="status" jdbcType="TINYINT"/>
+        <result column="organization_id" property="organizationId" jdbcType="VARCHAR"/>
+        <result column="p_organization_id" property="pOrganizationId" jdbcType="VARCHAR"/>
+        <result column="createdate" property="createdate" jdbcType="TIMESTAMP"/>
+        <result column="createdateShow" property="createdateShow" jdbcType="VARCHAR"/>
+        <result column="phone" property="phone" jdbcType="VARCHAR"/>
+		<result column="organizationName" property="organizationName" jdbcType="VARCHAR"/>
+        <result column="pOrganizationName" property="pOrganizationName" jdbcType="VARCHAR"/>
+        <result column="roleIds" property="roleIds" jdbcType="VARCHAR"/>
+		<result column="roleName" property="roleName" jdbcType="VARCHAR"/>
+    </resultMap>
+    
+    <sql id="Base_Column_List">
+    id, loginname, name, password, sex, age, usertype, status, organization_id,p_organization_id, createdate, 
+    phone,pwd_first_update,pwd_update_time,web_guide_first
+  </sql>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List"/>
+        from t_sys_user
+        where id = #{id,jdbcType=VARCHAR}
+    </select>
+
+    <select id="findUserByLoginName" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List"/>
+        from t_sys_user
+        where loginname = #{username}
+    </select>
+
+    <select id="findUserVoById" resultMap="userVoResultMap" parameterType="java.lang.String">
+        SELECT
+        t.id,
+        loginname,
+        t.name,
+        password,
+        sex,
+        age,
+        usertype,
+        t.status,
+        organization_id,
+        p_organization_id,
+        t.createdate,
+        phone,
+        o.id AS roleId,
+        o.name AS roleName
+        FROM
+        t_sys_user t
+        LEFT JOIN t_sys_user_role r ON t.id = r.user_id
+        LEFT JOIN t_sys_role o ON r.role_id = o.id
+        <where>
+            t.id = #{id}
+        </where>
+    </select>
+
+    <select id="findUserById" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List"/>
+        from t_sys_user
+        where id = #{id}
+    </select>
+    
+    
+    <select id="findUserByPage" resultMap="userResultMap" parameterType="com.vms.model.Page">
+        SELECT distinct t.id, loginname, t.name, password, sex, age, usertype, 
+		t.status, organization_id, t.createdate,to_char(t.createdate,'yyyy-mm-dd') createdateShow, phone,
+		 to_char(r.roleIds) as roleIds,
+		  to_char(r.roleName) as roleName  FROM t_sys_user t 
+		   LEFT JOIN (select wm_concat(r.role_id) as roleIds,wm_concat(o.NAME) as roleName,r.user_id
+			 from t_sys_user_role r LEFT JOIN t_sys_role o on o.id = r.role_id group by r.user_id) r ON t.id = r.user_id
+			 LEFT JOIN t_sys_user_role ur on ur.user_id = t.id
+		where t.id != '1' 
+            <if test=" params.name != null and params.name != '' ">
+               and UPPER(t.name) LIKE concat(concat('%',UPPER(#{params.name})),'%')  escape '/'
+            </if>
+            <if test=" params.status != null and params.status != '' ">
+            	and t.status=#{params.status}
+            </if>
+            <if test=" params.phone != null and params.phone != '' ">
+		    	and t.phone=#{params.phone}
+		    </if>
+            <if test=" params.roleIds != null and params.roleIds != '' ">
+	            and ur.role_id in (${params.roleIds})
+            </if>
+            <if test="params.createdateStart != null">
+                <![CDATA[
+            and t.createdate >= to_date(to_char(#{params.createdateStart}, 'yyyy-mm-dd') || ' 00:00:00', 'yyyy-mm-dd hh24:mi:ss')
+           ]]>
+            </if>
+            <if test="params.createdateEnd != null">
+                <![CDATA[
+            and t.createdate <=  to_date(to_char(#{params.createdateEnd}, 'yyyy-mm-dd') || ' 23:59:59', 'yyyy-mm-dd hh24:mi:ss')
+        ]]>
+            </if>
+           order by t.createdate desc
+    </select>
+    
+    <select id="findUserPageCondition" resultMap="userVoResultMap" parameterType="com.vms.model.PageInfo">
+        SELECT
+        t.id,
+        loginname,
+        t.name,
+        password,
+        sex,
+        age,
+        usertype,
+        t.status,
+        organization_id,
+        p_organization_id,
+        t.createdate,
+        phone,
+        s.name AS organizationName,
+        o.id AS roleId,
+        o.name AS roleName
+        FROM
+        t_sys_user t
+        LEFT JOIN t_sys_user_role r ON t.id = r.user_id
+        LEFT JOIN t_sys_role o ON r.role_id = o.id
+        LEFT JOIN t_sys_organization s ON s.id = t.organization_id
+        where t.id != '1' 
+            <if test=" condition.name != null and condition.name != '' ">
+               and t.name = #{condition.name}
+            </if>
+            <if test=" condition.organizationId != null ">
+               and t.organization_id = #{condition.organizationId}
+            </if>
+            <if test="condition.startTime != null">
+                <![CDATA[
+            and t.createdate >= #{condition.startTime}
+           ]]>
+            </if>
+            <if test="condition.endTime != null">
+                <![CDATA[
+            and t.createdate <= #{condition.endTime}
+        ]]>
+            </if>
+        <!--LIMIT #{from}, #{size}-->
+    </select>
+
+    <select id="findUserPageCount" resultType="java.lang.Integer" parameterType="com.vms.model.PageInfo">
+        select count(*) count
+        from t_sys_user t
+        where t.id != '1' 
+            <if test=" condition.name != null and condition.name != '' ">
+              and  t.name = #{condition.name}
+            </if>
+            <if test=" condition.organizationId != null ">
+               and t.organization_id = #{condition.organizationId}
+            </if>
+            <if test="condition.startTime != null">
+                <![CDATA[
+            and t.createdate >= #{condition.startTime}
+           ]]>
+            </if>
+            <if test="condition.endTime != null">
+                <![CDATA[
+            and t.createdate <= #{condition.endTime}
+            ]]>
+            </if>
+    </select>
+
+    <delete id="deleteById" parameterType="java.lang.String">
+    delete from t_sys_user
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  
+    <insert id="insert" parameterType="com.vms.model.User">
+        insert into t_sys_user (
+        id, 
+        loginname, 
+        name, 
+        password,
+        <if test="sex != null">
+        sex, 
+        </if>
+        <if test="age != null">
+        age, 
+        </if>
+        <if test="usertype != null">
+            usertype,
+        </if>
+        status,
+        organization_id,
+        p_organization_id,
+        pwd_first_update,
+        createdate,
+        pwd_update_time
+        <if test="phone != null">
+        ,phone
+        </if>
+        )
+        values (
+        #{id,jdbcType=VARCHAR},
+        #{loginname,jdbcType=VARCHAR}, 
+        #{name,jdbcType=VARCHAR}, 
+        #{password,jdbcType=VARCHAR},
+        <if test="sex != null">
+        #{sex,jdbcType=TINYINT}, 
+        </if>
+        <if test="age != null">
+        #{age,jdbcType=TINYINT}, 
+        </if>
+        <if test="usertype != null">
+            #{usertype,jdbcType=TINYINT},
+        </if>
+        #{status,jdbcType=TINYINT},
+        #{organizationId,jdbcType=VARCHAR},
+        #{pOrganizationId,jdbcType=VARCHAR}, 
+        #{pwdFirstUpdate,jdbcType=VARCHAR}, 
+        #{createdate,jdbcType=TIMESTAMP}, 
+        #{pwdUpdateTime,jdbcType=TIMESTAMP}
+        <if test="phone != null">
+        ,#{phone,jdbcType=VARCHAR}
+        </if>
+        )
+    </insert>
+
+    <update id="updateUserPwdById" parameterType="com.vms.model.User">
+    update t_sys_user
+    set password = #{password,jdbcType=VARCHAR},
+    pwd_first_update = #{pwdFirstUpdate,jdbcType=VARCHAR},
+    pwd_update_time = #{pwdUpdateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+
+    <update id="updateUser" parameterType="com.vms.model.User">
+        update t_sys_user
+        <set>
+            <if test="loginname != null">
+                loginname = #{loginname,jdbcType=VARCHAR},
+            </if>
+            <if test="name != null">
+                name = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="password != null and password != ''">
+                password = #{password,jdbcType=VARCHAR},
+            </if>
+            <if test="sex != null">
+                sex = #{sex,jdbcType=TINYINT},
+            </if>
+            <if test="age != null">
+                age = #{age,jdbcType=TINYINT},
+            </if>
+            <if test="usertype != null">
+                usertype = #{usertype,jdbcType=TINYINT},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=TINYINT},
+            </if>
+            <if test="organizationId != null">
+                organization_id = #{organizationId,jdbcType=VARCHAR},
+            </if>
+            <if test="phone != null">
+                phone = #{phone,jdbcType=VARCHAR},
+            </if>
+            <if test="pOrganizationId != null">
+                P_ORGANIZATION_ID = #{pOrganizationId,jdbcType=VARCHAR},
+            </if>
+            <if test="pwdFirstUpdate != null">
+                pwd_first_update = #{pwdFirstUpdate,jdbcType=VARCHAR},
+            </if>
+            <if test="pwdUpdateTime != null">
+                pwd_update_time = #{pwdUpdateTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=VARCHAR}
+    </update>
+    
+    <select id="countUser"   parameterType="com.vms.model.User"  resultType="java.lang.Integer">
+        SELECT　COUNT(1) FROM t_sys_user WHERE id != '1' 
+        <if test="organizationId != null">
+        AND organization_id = #{organizationId,jdbcType=VARCHAR}
+        </if>
+    </select>
+    <select id="countLongUser" resultType="java.lang.Long">
+        SELECT　COUNT(1) FROM t_sys_user WHERE id != '1' 
+    </select>
+    <select id="findSysUserByPage" resultMap="BaseResultMap" parameterType="com.vms.model.Page">
+        SELECT 
+        	<include refid="Base_Column_List"/>
+        FROM t_sys_user 
+        WHERE id != '1' 
+    </select>
+    
+    
+    <update id="editPersonInfo" parameterType="com.vms.model.UserVo">
+    	update t_sys_user set phone=#{phone} where id=#{id}
+    </update>
+    
+</mapper>

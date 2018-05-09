@@ -1,0 +1,343 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vms.mapper.ResourceMapper">
+	<resultMap id="BaseResultMap" type="com.vms.model.Resource">
+		<id column="id" property="id" jdbcType="BIGINT" />
+		<result column="name" property="name" jdbcType="VARCHAR" />
+		<result column="url" property="url" jdbcType="VARCHAR" />
+		<result column="description" property="description" jdbcType="VARCHAR" />
+		<result column="icon" property="icon" jdbcType="VARCHAR" />
+		<result column="pid" property="pid" jdbcType="BIGINT" />
+		<result column="seq" property="seq" jdbcType="TINYINT" />
+		<result column="status" property="status" jdbcType="TINYINT" />
+		<result column="resourcetype" property="resourcetype" jdbcType="TINYINT" />
+		<result column="createdate" property="createdate" jdbcType="TIMESTAMP" />
+		<result column="RESOURCE_ID" property="resourceId" jdbcType="VARCHAR" />
+		<result column="TOP_RESOURCE_ID" property="topResourceId"
+			jdbcType="VARCHAR" />
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		id, name, url, description, icon, pid, seq, status, resourcetype,
+		createdate
+	</sql>
+
+	<select id="findResourceById" resultMap="BaseResultMap"
+		parameterType="java.lang.Long">
+		select
+		<include refid="Base_Column_List" />
+		from t_sys_resource
+		where id = #{id,jdbcType=BIGINT}
+	</select>
+
+	<select id="findResourceAllOne" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_sys_resource t
+		where t.pid is null
+	</select>
+
+	<select id="findResourceByOne" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select t.id,t.name,t.url,t.seq,t.icon from t_sys_resource t
+		left join
+		t_sys_role_resource r on t.id = r.resource_id
+		left join t_sys_user_role
+		u on r.role_id = u.role_id
+		left join t_sys_role sr on u.role_id = sr.id
+		where u.user_id = #{userId}
+		and t.pid is null and t.url is null
+		and t.status = 0
+		and sr.status = 0
+		group by t.id,t.name,t.url,t.seq,t.icon
+		order by t.seq asc
+	</select>
+
+	<select id="findResourceByTwo" resultMap="BaseResultMap"
+		parameterType="com.vms.model.Resource">
+		select t.id, t.name, t.url, t.pid, t.seq
+		from t_sys_resource t
+		where t.resourcetype = 0
+		and t.status = 0
+		and exists (select 1
+		from t_sys_role_resource r, t_sys_user_role u
+		where r.role_id = u.role_id
+		and t.id = r.resource_id
+		and u.USER_ID = #{userId})
+		START WITH t.pid = #{pid,jdbcType=BIGINT}
+		connect by prior t.id = t.pid
+		group by t.id, t.name, t.url, t.pid, t.seq
+		order by t.seq
+	</select>
+
+	<select id="findResourceByThree" resultMap="BaseResultMap"
+		parameterType="com.vms.model.Resource">
+		select t.id, t.name, t.url,t.pid
+		from t_sys_resource t
+		left join t_sys_role_resource r
+		on t.id = r.resource_id
+		left join t_sys_user_role u
+		on r.role_id = u.role_id
+		where u.user_id = #{userId}
+		and t.pid in (select t.id
+		from t_sys_resource t
+		left join t_sys_role_resource r
+		on t.id = r.resource_id
+		left join t_sys_user_role u
+		on r.role_id = u.role_id
+		where u.user_id = #{userId}
+		and t.pid = #{pid,jdbcType=BIGINT}
+		group by t.id
+		)
+		group by t.id, t.name, t.url ,t.pid
+		order by t.id asc
+	</select>
+
+	<select id="findResourceByPidAndUser" resultMap="BaseResultMap"
+		parameterType="com.vms.model.Resource">
+		select t.id, t.name, t.url, t.pid, t.seq
+		from t_sys_resource t
+		where t.resourcetype = 0
+		and t.status = 0
+		and exists (select 1
+		from t_sys_role_resource r, t_sys_user_role u,t_sys_role sr
+		where r.role_id = u.role_id
+		and t.id = r.resource_id
+		and u.role_id = sr.id
+		and sr.status = 0
+		and u.USER_ID = #{userId})
+		START WITH t.pid = #{pid,jdbcType=BIGINT}
+		connect by prior t.id = t.pid
+		group by t.id, t.name, t.url, t.pid, t.seq
+		order by t.seq
+	</select>
+	
+	<select id="findResourceByPidAndUserAll" resultMap="BaseResultMap"
+		parameterType="com.vms.model.Resource">
+		select t.id, t.name, t.url, t.pid, t.seq
+		from t_sys_resource t
+		where t.resourcetype = 0
+		and t.status = 0
+		and exists (select 1
+		from t_sys_role_resource r, t_sys_user_role u,t_sys_role sr
+		where r.role_id = u.role_id
+		and t.id = r.resource_id
+		and u.role_id = sr.id
+		and sr.status = 0
+		and u.USER_ID = #{userId})
+		START WITH t.pid is null
+		connect by prior t.id = t.pid
+		group by t.id, t.name, t.url, t.pid, t.seq
+		order by t.seq
+	</select>
+
+	<!-- 查询所有父菜单 -->
+	<select id="findResourceAllByTypeAndPidNull" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select distinct
+		<include refid="Base_Column_List" />
+		from t_sys_resource
+		where resourcetype = #{resourceType}
+		and pid is null order by seq
+	</select>
+
+	<select id="findResourceAllByTypeAndPid" resultMap="BaseResultMap">
+		select distinct
+		<include refid="Base_Column_List" />
+		from t_sys_resource
+		where resourcetype = #{resourceType}
+		and pid = #{pid} order by seq
+	</select>
+
+	<select id="findResourceAllByPid" resultMap="BaseResultMap">
+		select distinct
+		<include refid="Base_Column_List" />
+		from t_sys_resource
+		where pid = #{pid} order by seq
+	</select>
+
+	<select id="findResourceAll" resultMap="BaseResultMap">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM t_sys_resource ORDER BY pid,seq
+	</select>
+	<select id="findGrantResources" resultMap="BaseResultMap">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM t_sys_resource
+		WHERE id not in 
+		(1,14,141,142,143,144,11314200,15553700,15565802,11333101,15561801,12,121,122,123,124,125,13,131,132,133,134,11461002,11475704,15262601,16121500,16482784,15142815,15155817,2017062001,201705181,2017062801,2017080702,20170313,16161400,16170701,16175102,15254902,9294300,2017080801,2017082305) 
+		and status = 0
+		ORDER BY pid,seq
+	</select>
+	<select id="queryResourceById" resultMap="BaseResultMap">
+		select distinct
+		<include refid="Base_Column_List" />
+		from t_sys_resource
+		where id = #{id}
+	</select>
+
+
+
+	<select id="findQuickResourceByUser" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select t.name,t.id,
+		t2.resource_id ,t2.top_resource_id ,t2.url
+		from P_USER_QUICK_LINK t2,t_sys_resource t
+		where t.id = t2.resource_id
+		and t2.user_id = #{userId}
+	</select>
+
+
+	<select id="findQuickResourceByRole" resultMap="BaseResultMap"
+		parameterType="java.lang.Long">
+		select t.name,
+		t2.resource_id ,t2.top_resource_id ,t2.url
+		from P_ROLE_QUICK_LINK t2,t_sys_resource t
+		where t.id = t2.resource_id
+		and t2.role_id = #{roleId}
+	</select>
+
+
+	<delete id="delHomeRsourceByUser" parameterType="java.lang.String">
+		delete from P_USER_QUICK_LINK
+		where user_id = #{userId,jdbcType=VARCHAR}
+	</delete>
+	
+	<delete id="delHomeRsourceByRole" parameterType="java.lang.String">
+		delete from P_ROLE_OPER_MENU
+		where role_id = #{roleId,jdbcType=VARCHAR}
+	</delete>
+
+	<insert id="addHomeUserResource" parameterType="com.vms.model.Resource">
+		insert into P_USER_QUICK_LINK (id, user_id, resource_id,top_resource_id,url,create_time)
+		values (#{id,jdbcType=BIGINT}, #{userId,jdbcType=VARCHAR},
+		#{resourceId,jdbcType=VARCHAR},
+		#{topResourceId,jdbcType=VARCHAR},
+		#{url,jdbcType=VARCHAR},
+		#{createTime})
+	</insert>
+	
+	<insert id="addOprHomeRoleResource" parameterType="com.vms.model.Resource">
+		insert into P_ROLE_OPER_MENU (id,role_id, resource_id,top_resource_id,url,create_time)
+		values (#{id,jdbcType=BIGINT},
+		#{roleId,jdbcType=VARCHAR},
+		#{resourceId,jdbcType=VARCHAR},
+		#{topResourceId,jdbcType=VARCHAR},
+		#{url,jdbcType=VARCHAR},
+		#{createTime})
+	</insert>
+
+	<select id="findHomeResourceIdListByUser" resultType="java.lang.Long"
+		parameterType="java.lang.String">
+		SELECT
+		resource_id AS id
+		FROM
+		P_USER_QUICK_LINK
+		WHERE
+		user_id = #{userId}
+	</select>
+
+	<select id="findOprHomeResourceIdListByUser" resultType="java.lang.Long"
+		parameterType="java.lang.String">
+		SELECT
+		resource_id AS id
+		FROM
+		P_USER_OPER_MENU
+		WHERE
+		user_id = #{userId}
+	</select>
+
+	<delete id="delOprHomeRsourceByUser" parameterType="java.lang.String">
+		delete from P_USER_OPER_MENU
+		where user_id = #{userId,jdbcType=VARCHAR}
+	</delete>
+
+	<insert id="addOprHomeUserResource" parameterType="com.vms.model.Resource">
+		insert into P_USER_OPER_MENU (id, user_id, resource_id,top_resource_id,url,create_time)
+		values (#{id,jdbcType=BIGINT}, #{userId,jdbcType=VARCHAR},
+		#{resourceId,jdbcType=VARCHAR},
+		#{topResourceId,jdbcType=VARCHAR},
+		#{url,jdbcType=VARCHAR},
+		#{createTime})
+	</insert>
+	
+	<select id="getOprHomeResourceByUser" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		SELECT id, user_id, resource_id,top_resource_id,url
+		FROM
+		P_USER_OPER_MENU
+		WHERE
+		user_id = #{userId}
+		order by create_time desc
+	</select>
+	
+	<select id="getOprHomeResourceByRole" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		SELECT id, role_id, resource_id,resource_id as "name", top_resource_id,url
+		FROM
+		P_ROLE_OPER_MENU
+		WHERE
+		role_id = #{roleId}
+		order by create_time desc
+	</select>
+	
+	<select id="findUserPanelResourceIdListByUser" resultType="java.lang.Long"
+		parameterType="java.lang.String">
+		SELECT
+		resource_id AS id
+		FROM
+		P_USER_PAGE_MENU
+		WHERE
+		user_id = #{userId}
+	</select>
+	
+	<delete id="delPanelRsourceByUser" parameterType="java.lang.String">
+		delete from P_USER_PAGE_MENU
+		where user_id = #{userId,jdbcType=VARCHAR}
+	</delete>
+
+	<insert id="addUserPanelResource" parameterType="com.vms.model.Resource">
+		insert into P_USER_PAGE_MENU (id, user_id, resource_id,top_resource_id,url,create_time)
+		values (#{id,jdbcType=BIGINT}, #{userId,jdbcType=VARCHAR},
+		#{resourceId,jdbcType=VARCHAR},
+		#{topResourceId,jdbcType=VARCHAR},
+		#{url,jdbcType=VARCHAR},
+		#{createTime})
+	</insert>
+	
+	<select id="queryResourceByMenuCode" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from t_sys_resource
+		where menu_code = #{menuCode,jdbcType=VARCHAR}
+	</select>
+	
+	<select id="findAllResourceByUser" resultMap="BaseResultMap" parameterType="java.lang.String">
+		SELECT
+			T.ID,T.NAME,T.URL,T.ICON,T.PID,T.SEQ
+		FROM
+			t_sys_resource T
+		LEFT JOIN
+			t_sys_role_resource R
+		ON
+			T.ID = R.RESOURCE_ID
+		LEFT JOIN
+			t_sys_user_role U
+		ON
+			R.ROLE_ID = U.ROLE_ID
+		LEFT JOIN
+			t_sys_role SR
+		ON
+			U.ROLE_ID = SR.ID
+		WHERE
+			U.USER_ID = #{USERID}
+			AND T.STATUS = 0
+			AND SR.STATUS = 0
+		GROUP BY
+			T.ID,T.NAME,T.URL,T.ICON,T.PID,T.SEQ
+		ORDER BY
+			T.SEQ ASC
+	</select>
+</mapper>
