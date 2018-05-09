@@ -4,24 +4,24 @@
 <body>
    <div class="modal-header">
 		<button type="button" class="close" ng-click="close()">&times;</button>
-		<h4 class="modal-title"> 新增</h4>
+		<h4 class="modal-title">新增</h4>
 	</div>
-	<div class="modal-body" >
+	<div class="modal-body"  style="height:180px;">
 		<form class="bs-example bs-example-form" role="form">
 			<div class="row">
 				<div class="col-sm-6">
 					<div class="row m0">
-						<div class="col-sm-4 form-title">部门名称</div>
+						<div class="col-sm-4 form-title">角色名称</div>
 						<div class="col-sm-8 p0">
-							<input type="text" class="form-control" placeholder="部门名称">
+							<input type="text" class="form-control" placeholder="角色名称">
 						</div>
 					</div>
 				</div>
 				<div class="col-sm-6">
 					<div class="row m0">
-							<div class="col-sm-4 form-title">固定电话</div>
+							<div class="col-sm-4 form-title">所属部门</div>
 							<div class="col-sm-8 p0">
-								<input type="text" class="form-control" placeholder="固定电话">
+								<input type="text" class="form-control" placeholder="所属部门">
 							</div>
 						</div>
 				</div>
@@ -30,39 +30,19 @@
 			<div class="row">
 				<div class="col-sm-6">
 					<div class="row m0">
-							<div class="col-sm-4 form-title">部门传真</div>
+							<div class="col-sm-4 form-title">类型</div>
 							<div class="col-sm-8 p0">
-								<input type="text" class="form-control" placeholder="部门传真">
+								<input type="text" class="form-control" placeholder="类型">
 							</div>
 						</div>
 				</div>
 				<div class="col-sm-6">
 					<div class="row m0">
-							<div class="col-sm-4 form-title">上级部门</div>
+							<div class="col-sm-4 form-title">描述</div>
 							<div class="col-sm-8 p0">
-								<input type="text" class="form-control" placeholder="上级部门">
+								<input type="text" class="form-control" placeholder="描述">
 							</div>
 						</div>	
-				</div>
-			</div>
-			<br>
-			<div class="row">
-				<div class="col-sm-6">
-					<div class="row m0">
-							<div class="col-sm-4 form-title">部门邮箱</div>
-							<div class="col-sm-8 p0">
-								<input type="text" class="form-control" placeholder="部门邮箱">
-							</div>
-						</div>	
-				</div>
-			</div>
-			<br>
-			<div class="row">
-				<div class="col-sm-12">
-					<div class="input-group">
-						<span class="input-group-addon">备注</span>
-						<textarea class="form-control" rows="3"></textarea>
-					</div>
 				</div>
 			</div>
 		</form>

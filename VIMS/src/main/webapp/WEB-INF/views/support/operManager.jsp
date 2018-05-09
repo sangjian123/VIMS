@@ -5,7 +5,7 @@
  <div class="vims-body">
 	  	<vims-table vims-url="options.url"  vims-columns="options.colums" vims-options="toolbar:'#toolbar',method:'get'"></vims-table>
 	  	<div id="toolbar" class="btn-group pull-right">
-				<button id="btn_add" type="button" class="btn btn-default" ng-click="addRole()">
+				<button id="btn_add" type="button" class="btn btn-default" ng-click="addOperator()">
 		            <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>新增
 		        </button>
 		        <button id="btn_edit" type="button" class="btn btn-default">
