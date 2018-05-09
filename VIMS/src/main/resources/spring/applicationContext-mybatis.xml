@@ -13,8 +13,8 @@
     http://www.springframework.org/schema/tx
     http://www.springframework.org/schema/tx/spring-tx.xsd">
 
-    <context:component-scan base-package="com.vms.*.*.service.*"/>
     <context:component-scan base-package="com.vms.*.service.*"/>
+    <context:component-scan base-package="com.vms.service.*"/>
 
     <context:component-scan base-package="com.vms.commons.datasource"/>
 
@@ -52,7 +52,7 @@
     </bean>
 
     <bean id="mapperScannerConfigurer" class="org.mybatis.spring.mapper.MapperScannerConfigurer">
-        <property name="basePackage" value="com.vms.*.mapper;com.vms.*.*.mapper"/>
+        <property name="basePackage" value="com.vms.mapper;com.vms.*.mapper"/>
     </bean>
 
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
