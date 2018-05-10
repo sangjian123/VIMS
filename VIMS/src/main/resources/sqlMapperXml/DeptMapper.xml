@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vms.mapper.DeptMapper">
+    <resultMap id="BaseResultMap" type="com.vms.model.Dept">
+        <id column="deptcode" property="deptcode" jdbcType="VARCHAR"/>
+        <result column="deptname" property="deptname" jdbcType="VARCHAR"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    deptcode, deptname
+  </sql>
+
+    
+    <select id="findDeptByPage" resultMap="BaseResultMap" parameterType="com.vms.model.Page">
+       select deptcode, deptname  from t_deptinfo r 
+        where r.deptcode!=-1
+        <if test="params != null and params.deptcode != null">
+           deptcode = #{params.deptcode}
+        </if>
+        <if test=" params.deptname != null and params.deptname != '' ">
+               and r.deptname LIKE concat(concat('%',#{params.deptname}),'%')  escape '/'
+        </if>
+		
+		<choose>
+		    <when test="conditions == null">
+		    	ORDER BY r.deptcode
+		    </when>
+		    <otherwise>
+		         order by  ${conditions.order}
+		    </otherwise>
+	</choose>
+    </select>
+    
+    <insert id="addDept" parameterType="com.vms.model.Dept">
+        insert into t_sys_role (deptcode, deptname)
+        values (#{deptcode,jdbcType=VARCHAR}, #{deptname,jdbcType=VARCHAR})
+    </insert>
+    
+    <update id="updateRole" parameterType="com.vms.model.Role">
+        update t_sys_role
+        <set>
+            <if test="name != null">
+                name = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="seq != null">
+                seq = #{seq,jdbcType=TINYINT},
+            </if>
+            <if test="description != null">
+                description = #{description,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=TINYINT},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+    
+    
+    <delete id="deleteRoleById" parameterType="java.lang.Long">
+    delete from t_sys_role
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+    
+</mapper>
