@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vms.mapper.VehicleMapper">
+    <resultMap id="BaseResultMap" type="com.vms.model.VehiclePosInfo">
+        <id column="cardnumber" property="cardnumber" jdbcType="VARCHAR"/>
+        <result column="longitude" property="longitude" jdbcType="DOUBLE"/>
+        <result column="dimension" property="dimension" jdbcType="DOUBLE"/>
+        <result column="prelongitude" property="prelongitude" jdbcType="DOUBLE"/>
+        <result column="predimension" property="predimension" jdbcType="DOUBLE"/>
+		<result column="displayicon" property="displayicon" jdbcType="VARCHAR"/>
+		<result column="ctime" property="ctime" jdbcType="VARCHAR"/>
+		<result column="mileage" property="mileage" jdbcType="DOUBLE"/>
+		<result column="speed" property="speed" jdbcType="INTEGER"/>
+    </resultMap>
+	
+	<resultMap id="DeptResultMap" type="com.vms.model.VehicleWtihDept">
+		<result column="name" property="deptName" jdbcType="VARCHAR"/>
+		<result column="cardnumber" property="cardnumber" jdbcType="VARCHAR"/>
+    </resultMap>
+	
+    <sql id="Base_Column_List">
+        a.cardnumber, longitude, dimension,displayicon,ctime,prelongitude, predimension,mileage,speed
+    </sql>
+	
+	<sql id="Base_Column_List_Dept">
+        name, cardnumber
+    </sql>
+    
+    <sql id="Base_His_Column_List">
+        a.cardnumber, longitude, dimension,displayicon,ctime,mileage,speed
+    </sql>
+
+    <select id="queryVehicleInfoByCardNumberList" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List"/>
+		from t_equipposinfo a , t_equipment b
+         where a.cardnumber = b.cardnumber
+           and a.cardnumber in (${CARDNUMBERLIST})
+    </select>
+	
+	
+	<select id="queryVehicleWtihDeptInfo" resultMap="DeptResultMap" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List_Dept"/>
+		  from t_dept a ,t_equipment b
+         where a.id = b.belongdept
+		 
+		<if test=" STATUS != 0 ">
+        	and b.status=#{STATUS}
+        </if>
+		
+		<if test=" CARDNUMBER != null ">
+        	and b.cardnumber LIKE concat(concat('%',#{CARDNUMBER}),'%')  escape '/'
+        </if>
+		
+		order by a.name desc 
+    </select>
+    
+    <select id="queryVehicleHisInfoByCardNumber" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="Base_His_Column_List"/>
+		from t_equiphisposinfo a , t_equipment b
+         where a.cardnumber = b.cardnumber
+         
+         <if test="CARDNUMBER != null ">
+			<![CDATA[ and a.cardnumber = #{CARDNUMBER} ]]>
+		 </if>
+         
+         <if test="STARTTIME != null ">
+			<![CDATA[ and a.ctime >= to_date(#{STARTTIME}, 'yyyy-mm-dd hh24:mi:ss')]]>
+		 </if>
+		 
+         <if test="ENDTIME != null ">
+			<![CDATA[ and a.ctime <= to_date(#{ENDTIME}, 'yyyy-mm-dd hh24:mi:ss')]]>
+		 </if>
+           
+         order by a.ctime asc 
+    </select>
+    
+	<parameterMap type="map" id="map">
+		<parameter property="CARDNUMBER" mode="IN" />
+		<parameter property="LONGITUDE" mode="IN" />
+		<parameter property="DIMENSION" mode="IN" />
+		<parameter property="LONGITUDE_FLAG" mode="IN" />
+		<parameter property="DIMENSION_FLAG" mode="IN" />
+		<parameter property="CTIME" mode="IN" />
+		<parameter property="FLAG" mode="IN" />
+	</parameterMap>
+	<update id="updateVehicleInfo" parameterMap="map" statementType="CALLABLE">
+		{call p_batch_updatedailydata(?,?,?,?,?,?,?)}
+	</update>
+    
+
+</mapper>
