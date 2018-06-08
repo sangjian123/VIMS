@@ -130,12 +130,12 @@ create table t_dept
 
 create table T_EQUIPPOSINFO
 (
-  cardnumber     VARCHAR2(20) not null,
-  longitude      NUMBER(20,5),
-  dimension      NUMBER(20,5),
+  equipnumber    VARCHAR2(20) not null,
+  longitude      NUMBER(20,6),
+  dimension      NUMBER(20,6),
   ctime          DATE,
-  prelongitude   NUMBER(20,5),
-  predimension   NUMBER(20,5),
+  prelongitude   NUMBER(20,6),
+  predimension   NUMBER(20,6),
   ptime          DATE,
   mileage        NUMBER(20,5),
   speed          NUMBER(10),
@@ -146,12 +146,12 @@ create table T_EQUIPPOSINFO
                         
 create table T_EQUIPHISPOSINFO
 (
-  cardnumber   VARCHAR2(20) not null,
-  longitude    NUMBER(20,5) not null,
-  dimension    NUMBER(20,5) not null,
+  equipnumber  VARCHAR2(20) not null,
+  longitude    NUMBER(20,6) not null,
+  dimension    NUMBER(20,6) not null,
   ctime        DATE not null,
-  prelongitude NUMBER(20,5),
-  predimension NUMBER(20,5),
+  prelongitude NUMBER(20,6),
+  predimension NUMBER(20,6),
   ptime        DATE,
   mileage      NUMBER(20,5),
   speed        NUMBER(10)
@@ -618,7 +618,7 @@ begin
         select s.longitude,s.dimension,s.ctime,s.mileage
           into d_l_longitude,d_l_dimension,p_time,i_l_miles
           from t_equipposinfo s
-         where s.cardnumber = str_deviceid;
+         where s.equipnumber = str_deviceid;
     exception
         when no_data_found then
               i_l_miles := 0;
@@ -647,17 +647,17 @@ begin
            t.dimension_flag = str_dimension_flag,
            t.mileage        = t.mileage + GetDistance(to_number(str_longitude),to_number(str_dimension),to_number(d_l_longitude),to_number(d_l_dimension)),
            t.speed          = (GetDistance(to_number(str_longitude),to_number(str_dimension),to_number(d_l_longitude),to_number(d_l_dimension))/i_l_sencendtime)*60*60
-     where t.cardnumber = str_deviceid;
+     where t.equipnumber = str_deviceid;
 
     if(sql%notfound) then
-         insert into t_equipposinfo(cardnumber,longitude,dimension,ctime,prelongitude,predimension,ptime,
+         insert into t_equipposinfo(equipnumber,longitude,dimension,ctime,prelongitude,predimension,ptime,
                                     mileage,speed,longitude_flag,dimension_flag)
                values( str_deviceid,str_longitude,str_dimension,to_date(str_ctime,'yyyymmdd hh24:mi:ss'),str_longitude,str_dimension,to_date(str_ctime,'yyyymmdd hh24:mi:ss'),
                                     0,0,str_longitude_flag,str_dimension_flag);
 
     end if;
     
-    insert into t_equiphisposinfo(cardnumber,longitude,dimension,ctime,mileage,speed)
+    insert into t_equiphisposinfo(equipnumber,longitude,dimension,ctime,mileage,speed)
                 values(str_deviceid,str_longitude,str_dimension,to_date(str_ctime,'yyyymmdd hh24:mi:ss'),
                              i_l_miles+GetDistance(to_number(str_longitude),to_number(str_dimension),to_number(d_l_longitude),to_number(d_l_dimension)),
                              (GetDistance(to_number(str_longitude),to_number(str_dimension),to_number(d_l_longitude),to_number(d_l_dimension))/i_l_sencendtime)*60*60  );
