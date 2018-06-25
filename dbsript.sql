@@ -169,7 +169,14 @@ create table T_DEVICELIST
 
 
 insert into t_devicelist(id,name,pid,isleaf,description) values(0,'root',-1,0,'root node');
-							 
+		
+
+create table t_devicekey( id number(10) not null,
+                          url  varchar2(20) not null,
+                          port   number(2)    not null,
+                          username   varchar2(20) not null,
+                          password        varchar2(20) not null
+                         );		
 
 							 
 --工作流相关
@@ -217,6 +224,10 @@ create table ACT_GE_PROPERTY
   VALUE_ NVARCHAR2(300),
   REV_   NUMBER
 );
+
+insert into ACT_GE_PROPERTY(NAME_,VALUE_,REV_) values('schema.version','5.18.0.1',1);
+
+commit;
 
 create table ACT_HI_ACTINST
 (
@@ -596,6 +607,23 @@ create table t_dirverdetailinfo
   todaymile  NUMBER(10,5) not null
 );
 
+create table T_PROCEXCEPTIONLOG
+(
+  procname    VARCHAR2(100) not null,
+  processip   VARCHAR2(100),
+  operator    VARCHAR2(1000),
+  sqlerrm     VARCHAR2(2000),
+  description VARCHAR2(2000),
+  logtime     DATE not null
+)
+partition by range (LOGTIME)
+(
+  partition P_LESS values less than (TO_DATE(' 2017-06-01 00:00:00', 'SYYYY-MM-DD HH24:MI:SS', 'NLS_CALENDAR=GREGORIAN')),
+  partition SYS_P627 values less than (TO_DATE(' 2018-05-01 00:00:00', 'SYYYY-MM-DD HH24:MI:SS', 'NLS_CALENDAR=GREGORIAN')),
+  partition SYS_P628 values less than (TO_DATE(' 2018-06-01 00:00:00', 'SYYYY-MM-DD HH24:MI:SS', 'NLS_CALENDAR=GREGORIAN')),
+  partition SYS_P629 values less than (TO_DATE(' 2018-07-01 00:00:00', 'SYYYY-MM-DD HH24:MI:SS', 'NLS_CALENDAR=GREGORIAN'))
+);
+
 create or replace procedure p_batch_updatedailydata
 (
     str_deviceid          varchar2,
@@ -697,4 +725,73 @@ PI number :=3.141592625;
 begin
    return  d* PI/180.0;
 end Radian;
+/
+create or replace procedure p_storecallinfo
+(
+    str_in_operator       in    t_procexceptionlog.operator%type
+)
+is
+pragma autonomous_transaction;
+    str_l_endofline   constant    char(1) := chr(10);
+    str_l_endoffield  constant    char(1) := chr(32);
+
+    i_l_ptfinligne    number;
+    i_l_ptdebligne    number;
+    i_l_ptdebcode     number;
+    i_l_index         number;
+    i_l_line          number;
+    i_l_lineend       number;
+
+    str_l_stackinfo   varchar2(4000);
+    str_l_result      varchar2(4000);
+    str_l_linestr     varchar2(4000);
+    str_l_procname    varchar2(4000);
+    str_l_errorpos    varchar2(4000);
+
+begin
+    str_l_stackinfo := str_in_operator;
+    i_l_index       := 2;
+    i_l_ptfinligne  := length(str_l_stackinfo);
+    i_l_ptdebligne  := i_l_ptfinligne;
+
+    while i_l_ptfinligne > 0 and i_l_ptdebligne > 83 loop
+
+        i_l_ptdebligne   := instr (str_l_stackinfo, str_l_endofline, -1, i_l_index) + 1 ;
+        i_l_index        := i_l_index + 1;
+
+        str_l_linestr    := substr(str_l_stackinfo, i_l_ptdebligne, i_l_ptfinligne - i_l_ptdebligne);
+        i_l_ptdebcode    := instr (str_l_linestr, str_l_endoffield, -1, 1);
+        i_l_line         := instr (str_l_linestr, str_l_endoffield, -1, 4);
+        i_l_lineend      := instr (str_l_linestr, str_l_endoffield, -1, 3);
+
+        str_l_procname   := substr(substr(str_l_linestr, i_l_ptdebcode + 1),instr(substr(str_l_linestr, i_l_ptdebcode + 1),'.')+1);
+        str_l_errorpos   := trim(substr(str_l_linestr, i_l_line+1,i_l_lineend-i_l_line-1));
+
+        if (i_l_index > 3) then
+            str_l_result := str_l_result || str_l_procname ||'@'||str_l_errorpos || '|';
+        end if;
+
+        i_l_ptfinligne := i_l_ptdebligne - 1;
+
+    end loop;
+
+     --store call information
+    insert into t_procexceptionlog( procname,
+                                    processip,
+                                    operator,
+                                    sqlerrm,
+                                    description,
+                                    logtime)
+                            values( upper(str_l_procname),
+                                    sys_context('userenv','ip_address') ,
+                                    str_l_result,
+                                    dbms_utility.format_error_stack,
+                                    dbms_utility.format_error_backtrace,
+                                    sysdate
+                                   );
+    commit;
+exception
+    when others then
+        rollback;
+end p_storecallinfo;
 /
