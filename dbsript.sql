@@ -1,12 +1,12 @@
-
---Áî®Êà∑
+drop table t_userinfo;
+--”√ªß
 create table t_userinfo( id number(20) not null,
                          loginname varchar2(200) not null,
                          nickname varchar2(200) not null,
                          password varchar2(200) not null,
-                         phone varchar2(20)  not null,
+                         phone varchar2(20) ,
                          createtime date not null, 
-                         updatetime date not null,
+                         updatetime date ,
                          status     number(1),
                          belongdept number(20)
                         );
@@ -19,18 +19,9 @@ increment by 1
 cache 20
 order;
 
-drop table t_userinfo;
+insert into t_userinfo(id,loginname, nickname , password, phone,createtime , updatetime,status,belongdept )values(1,'root','root','f01ee7e230e47fa04ec8a41e06987076','',sysdate,null,1,'');
 
-select a.rowid,a.* from t_sys_role a;
-select a.rowid,a.* from t_sys_resource a;
-select a.rowid,a.* from t_sys_role_resource a;
-select a.rowid,a.* from T_ROLE a;
-select a.rowid,a.* from t_sys_user a;
-select * from t_sys_organization a;
-select u.name,o.name ,o.* from T_SYS_DEPT_ADMIN a,t_sys_user u,t_sys_organization o where u.id=a.user_id and a.dept_no=o.id;
-
-
---ËßíËâ≤
+--Ω«…´
 create table T_ROLE
 (
   id          NUMBER(19) not null,
@@ -38,7 +29,7 @@ create table T_ROLE
   description VARCHAR2(255),
   status      NUMBER(2) not null
 );
---Áî®Êà∑ËßíËâ≤ÂÖ≥Á≥ª
+--”√ªßΩ«…´πÿœµ
 create table T_USER_ROLE
 (
   id      NUMBER(19) not null,
@@ -46,7 +37,7 @@ create table T_USER_ROLE
   role_id NUMBER(19)
 );
 
--- ËèúÂçï
+-- ≤Àµ•
 create table T_RESOURCE
 (
   id           NUMBER(19) not null,
@@ -169,17 +160,29 @@ create table T_DEVICELIST
 
 
 insert into t_devicelist(id,name,pid,isleaf,description) values(0,'root',-1,0,'root node');
-		
+insert into t_devicelist(id,name,pid,isleaf,description) values(1,'πƒ¬•«¯',0,0,'root node');
+insert into t_devicelist(id,name,pid,isleaf,description) values(2,'µÁ¡¶¥Ûœ√1',1,1,'root node');
+insert into t_devicelist(id,name,pid,isleaf,description) values(3,'µÁ¡¶¥Ûœ√2',1,1,'root node');
 
-create table t_devicekey( id number(10) not null,
-                          url  varchar2(20) not null,
-                          port   number(2)    not null,
-                          username   varchar2(20) not null,
-                          password        varchar2(20) not null
-                         );		
+
+create table T_DEVICEKEY
+(
+  id          NUMBER(10) not null,
+  url         VARCHAR2(200) not null,
+  username    VARCHAR2(200) not null,
+  password    VARCHAR2(200) not null,
+  devname     VARCHAR2(200),
+  devpassword VARCHAR2(200),
+  channelid   VARCHAR2(200) 
+);	
+
+insert into t_devicekey(id,url,username,password,devname,devpassword,channelid) values(2,'http://ezcloud.uniview.com/','caixiaohua123','Device00001','caixiaohua123',1);
+insert into t_devicekey(id,url,username,password,devname,devpassword,channelid) values(3,'http://ezcloud.uniview.com/','caixiaohua123','Device00001','caixiaohua123',1);
+
+commit;	
 
 							 
---Â∑•‰ΩúÊµÅÁõ∏ÂÖ≥
+--π§◊˜¡˜œ‡πÿ
 
 create table ACT_EVT_LOG
 (
